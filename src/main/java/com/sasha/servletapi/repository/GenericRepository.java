@@ -1,7 +1,6 @@
 package com.sasha.servletapi.repository;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface GenericRepository<T, ID> {
     T save(T entity);

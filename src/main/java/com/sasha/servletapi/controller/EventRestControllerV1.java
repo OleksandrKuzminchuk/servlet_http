@@ -1,15 +1,12 @@
 package com.sasha.servletapi.controller;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonIOException;
 import com.sasha.servletapi.exception.NotFoundException;
 import com.sasha.servletapi.pojo.Event;
 import com.sasha.servletapi.service.EventService;
-import com.sasha.servletapi.service.impl.EventServiceImpl;
+import com.sasha.servletapi.util.ServiceLocator;
 
 import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -19,38 +16,34 @@ import java.util.Optional;
 
 import static com.sasha.servletapi.util.constant.Constants.*;
 import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
-import static javax.servlet.http.HttpServletResponse.SC_NOT_FOUND;
 
-@WebServlet(name = EVENT_CONTROLLER, urlPatterns = URL_API_EVENTS)
-public class EventController extends HttpServlet {
-    private final EventService service = new EventServiceImpl();
-    private final Gson gson = new GsonBuilder()
-            .excludeFieldsWithoutExposeAnnotation().create();
+@WebServlet(name = EVENT_REST_CONTROLLER_V1, urlPatterns = URL_API_V1_EVENTS)
+public class EventRestControllerV1 extends BaseRestControllerV1 {
+    private final EventService service;
+
+    public EventRestControllerV1() {
+        this.service = ServiceLocator.getEventService();
+    }
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
         try {
             String pathInfo = req.getPathInfo();
-            Optional<Integer> id = parseEventId(pathInfo);
+            Optional<Integer> id = parseId(pathInfo);
 
             if (!id.isPresent()) {
                 List<Event> events = service.findAll();
                 resp.setContentType(APPLICATION_JSON);
                 resp.getWriter().write(gson.toJson(events));
             } else {
-                try {
-                    Event event = service.findById(id.get());
-                    resp.setContentType(APPLICATION_JSON);
-                    resp.getWriter().write(gson.toJson(event));
-                } catch (NotFoundException e) {
-                    sendError(resp, SC_NOT_FOUND, e.getMessage());
-                }
+                Event event = service.findById(id.get());
+                resp.setContentType(APPLICATION_JSON);
+                resp.getWriter().write(gson.toJson(event));
             }
-        }catch (NotFoundException e) {
-            sendError(resp, SC_NOT_FOUND, e.getMessage());
-        }
-        catch (IOException | JsonIOException e) {
-            System.out.println(NO_CORRECT_REQUEST + e);
+        } catch (NotFoundException e) {
+            sendError(resp, SC_BAD_REQUEST, e.getMessage());
+        } catch (IOException | JsonIOException e) {
+            sendError(resp, SC_BAD_REQUEST, NO_CORRECT_REQUEST + e.getMessage());
         }
 
     }
@@ -61,7 +54,7 @@ public class EventController extends HttpServlet {
             Event event = gson.fromJson(req.getReader(), Event.class);
 
             if (event.getUser() == null || event.getFile() == null) {
-                resp.sendError(SC_BAD_REQUEST, FILE_USER_IS_REQUIRED);
+                sendError(resp, SC_BAD_REQUEST, FILE_USER_IS_REQUIRED);
                 return;
             }
 
@@ -69,16 +62,16 @@ public class EventController extends HttpServlet {
             resp.setContentType(APPLICATION_JSON);
             resp.getWriter().write(gson.toJson(savedEvent));
         } catch (NotFoundException e) {
-            sendError(resp, SC_NOT_FOUND, e.getMessage());
+            sendError(resp, SC_BAD_REQUEST, e.getMessage());
         } catch (IOException | JsonIOException e) {
-            System.out.println(NO_CORRECT_REQUEST + e);
+            sendError(resp, SC_BAD_REQUEST, NO_CORRECT_REQUEST + e.getMessage());
         }
     }
 
     @Override
     protected void doPut(HttpServletRequest req, HttpServletResponse resp) {
         String pathInfo = req.getPathInfo();
-        Optional<Integer> id = parseEventId(pathInfo);
+        Optional<Integer> id = parseId(pathInfo);
 
         if (!id.isPresent()) {
             sendError(resp, SC_BAD_REQUEST, EVENT_ID_IS_REQUIRED);
@@ -92,16 +85,16 @@ public class EventController extends HttpServlet {
             resp.setContentType(APPLICATION_JSON);
             resp.getWriter().write(gson.toJson(savedEvent));
         } catch (NotFoundException e) {
-            sendError(resp, SC_NOT_FOUND, e.getMessage());
+            sendError(resp, SC_BAD_REQUEST, e.getMessage());
         } catch (IOException | JsonIOException e) {
-            System.out.println(NO_CORRECT_REQUEST + e);
+            sendError(resp, SC_BAD_REQUEST, NO_CORRECT_REQUEST + e.getMessage());
         }
     }
 
     @Override
     protected void doDelete(HttpServletRequest req, HttpServletResponse resp) {
         String pathInfo = req.getPathInfo();
-        Optional<Integer> id = parseEventId(pathInfo);
+        Optional<Integer> id = parseId(pathInfo);
 
         if (!id.isPresent()) {
             service.deleteAll();
@@ -111,27 +104,8 @@ public class EventController extends HttpServlet {
                 service.deleteById(id.get());
                 resp.setStatus(HttpServletResponse.SC_NO_CONTENT);
             } catch (NotFoundException e) {
-                sendError(resp, SC_NOT_FOUND, e.getMessage());
+                sendError(resp, SC_BAD_REQUEST, e.getMessage());
             }
         }
-    }
-
-    private Optional<Integer> parseEventId(String pathInfo) {
-        if (pathInfo == null || pathInfo.equals(SLASH)) {
-            return Optional.empty();
-        }
-
-        try {
-            return Optional.of(Integer.parseInt(pathInfo.substring(1)));
-        } catch (NumberFormatException e) {
-            return Optional.empty();
-        }
-    }
-
-    private void sendError(HttpServletResponse resp, int errorCode, String errorMessage) {
-        try {
-            resp.sendError(errorCode, errorMessage);
-        } catch (IOException | JsonIOException e) {
-            sendError(resp, SC_BAD_REQUEST, NO_CORRECT_REQUEST);        }
     }
 }

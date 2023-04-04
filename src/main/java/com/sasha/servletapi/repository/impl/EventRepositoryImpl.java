@@ -21,7 +21,7 @@ public class EventRepositoryImpl implements EventRepository {
     private final HibernateUtil hibernateUtil = HibernateUtil.getInstance();
     @Override
     public Event save(Event event) {
-        Event savedEvent = null;
+        Event savedEvent;
         try (Session session = hibernateUtil.getSessionFactory().openSession()){
             session.getTransaction().begin();
             savedEvent = (Event) session.merge(event);
@@ -35,7 +35,7 @@ public class EventRepositoryImpl implements EventRepository {
 
     @Override
     public Event update(Event event) {
-        Event updatedEvent = null;
+        Event updatedEvent;
         try (Session session = hibernateUtil.getSessionFactory().openSession()){
             session.getTransaction().begin();
             updatedEvent = session.get(Event.class, event.getId(), LockMode.PESSIMISTIC_WRITE);
@@ -53,7 +53,7 @@ public class EventRepositoryImpl implements EventRepository {
         Event event = null;
         try (Session session = hibernateUtil.getSessionFactory().openSession()){
             Query<EventData> query = session.createQuery(FIND_EVENT_BY_ID, EventData.class);
-            query.setParameter("id", id);
+            query.setParameter(TEXT_ID, id);
             EventData eventData = query.getSingleResult();
 
             if (eventData != null) {
@@ -72,7 +72,7 @@ public class EventRepositoryImpl implements EventRepository {
 
     @Override
     public List<Event> findAll() {
-        List<Event> events = null;
+        List<Event> events;
         try (Session session = hibernateUtil.getSessionFactory().openSession()) {
             Query<EventData> query = session.createQuery(FIND_ALL_EVENTS, EventData.class);
             List<EventData> results = query.getResultList();
@@ -98,7 +98,7 @@ public class EventRepositoryImpl implements EventRepository {
             session.getTransaction().begin();
             session
                     .createQuery(DELETE_EVENT_BY_ID)
-                    .setParameter("id", id)
+                    .setParameter(TEXT_ID, id)
                     .executeUpdate();
             session.getTransaction().commit();
         }catch (Exception e){

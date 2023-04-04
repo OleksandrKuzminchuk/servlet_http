@@ -18,7 +18,7 @@ public class FileRepositoryImpl implements FileRepository {
 
     @Override
     public File save(File file) {
-        File savedFile = null;
+        File savedFile;
         try (Session session = hibernateUtil.getSessionFactory().openSession()) {
             session.getTransaction().begin();
             savedFile = (File) session.merge(file);
@@ -32,7 +32,7 @@ public class FileRepositoryImpl implements FileRepository {
 
     @Override
     public File update(File file) {
-        File updatedFile = null;
+        File updatedFile;
         try (Session session = hibernateUtil.getSessionFactory().openSession()) {
             session.getTransaction().begin();
             updatedFile = session.get(File.class, file.getId(), LockMode.PESSIMISTIC_WRITE);
@@ -48,7 +48,7 @@ public class FileRepositoryImpl implements FileRepository {
 
     @Override
     public File findById(Integer id) {
-        File file = null;
+        File file;
         try (Session session = hibernateUtil.getSessionFactory().openSession()) {
             file = session.get(File.class, id);
         } catch (Exception e) {
@@ -59,7 +59,7 @@ public class FileRepositoryImpl implements FileRepository {
 
     @Override
     public List<File> findAll() {
-        List<File> files = null;
+        List<File> files;
         try (Session session = hibernateUtil.getSessionFactory().openSession()) {
             files = session
                     .createQuery(FIND_ALL_FILES, File.class)
@@ -76,7 +76,7 @@ public class FileRepositoryImpl implements FileRepository {
             session.getTransaction().begin();
             session
                     .createQuery(DELETE_FILE_BY_ID)
-                    .setParameter("id", id)
+                    .setParameter(TEXT_ID, id)
                     .executeUpdate();
             session.getTransaction().commit();
         } catch (Exception e) {
@@ -102,7 +102,7 @@ public class FileRepositoryImpl implements FileRepository {
         try (Session session = hibernateUtil.getSessionFactory().openSession()) {
             Query<Long> query = session
                     .createQuery(IS_EXISTS_FILE_BY_NAME, Long.class)
-                    .setParameter("name", name);
+                    .setParameter(TEXT_NAME, name);
             long count = query.getSingleResult();
             return count > 0;
         }
@@ -110,12 +110,12 @@ public class FileRepositoryImpl implements FileRepository {
 
     @Override
     public File findByName(String name) {
-        File file = null;
+        File file;
         try(Session session = hibernateUtil.getSessionFactory().openSession()){
             session.getTransaction().begin();
             file = session
-                    .createQuery( FIND_BY_NAME, File.class)
-                    .setParameter("name", name)
+                    .createQuery(FIND_BY_NAME, File.class)
+                    .setParameter(TEXT_NAME, name)
                     .getSingleResult();
             session.getTransaction().commit();
         }catch (Exception e){

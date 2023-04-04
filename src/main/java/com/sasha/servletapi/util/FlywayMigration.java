@@ -20,8 +20,8 @@ public class FlywayMigration {
             Flyway flyway = Flyway.configure()
                     .dataSource(properties.getProperty(HIBERNATE_CONNECTION_URL), properties.getProperty(HIBERNATE_CONNECTION_USERNAME), properties.getProperty(HIBERNATE_CONNECTION_PASSWORD))
                     .locations(CREATE_TABLES_FILE)
-                    .baselineVersion("0")
-                    .baselineOnMigrate(true)
+                    .baselineVersion(TEXT_ZERO)
+                    .baselineOnMigrate(TRUE)
                     .load();
             flyway.migrate();
 

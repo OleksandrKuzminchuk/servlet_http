@@ -2,7 +2,7 @@ package com.sasha.servletapi.util.constant;
 
 public final class Constants {
     private Constants() {
-        throw new IllegalStateException("Utility class");
+        throw new IllegalStateException(TEXT_UTILITY_CLASS);
     }
     public static final String CREATE_TABLES_FILE = "classpath:/db/migration";
     public static final String HIBERNATE_PROPERTIES = "hibernate.properties";
@@ -38,20 +38,25 @@ public final class Constants {
     public static final String DATABASE_MIGRATION_SUCCESSFULLY = "Database migration completed successfully!";
     public static final String DATABASE_MIGRATION_FAILED = "Database migration failed: ";
     public static final String REGEX_FOLLOWED_BY_AN_INTEGER = "/\\d+";
-    public static final String USER_CONTROLLER = "UserController";
-    public static final String FILE_CONTROLLER = "FileController";
-    public static final String EVENT_CONTROLLER = "EventController";
-    public static final String URL_API_USERS = "/api/users/*";
-    public static final String URL_API_FILES = "/api/files/*";
-    public static final String URL_API_EVENTS = "/api/events/*";
+    public static final String USER_REST_CONTROLLER_V1 = "UserRestControllerV1";
+    public static final String FILE_REST_CONTROLLER_V1 = "FileRestControllerV1";
+    public static final String EVENT_REST_CONTROLLER_V1 = "EventRestControllerV1";
+    public static final String URL_API_V1_USERS = "/api/v1/users/*";
+    public static final String URL_API_V1_FILES = "/api/v1/files/*";
+    public static final String URL_API_V1_EVENTS = "/api/v1/events/*";
     public static final String SLASH = "/";
     public static final String DIRECTORY_FILE_PACKAGE = "C:\\Users\\Kuzminchuk_Alexandr\\IdeaProjects\\servlet_http\\src\\main\\resources\\file";
     public static final String IO_EXCEPTION = "Failed to input or output stream: ";
-    public static final String SERVLET_EXCEPTION = "Failed to servlet: ";
+    public static final String TEXT_ID = "id";
+    public static final String TEXT_NAME = "name";
     public static final String FILE_HAS_ALREADY_TAKEN = "The file has already taken with the name. Do you want to change the name of file or overwrite it?";
-    public static final String OVERWRITE = "overwrite";
-    public static final String TRUE = "true";
+    public static final String TEXT_OVERWRITE = "overwrite";
+    public static final String TEXT_TRUE = "true";
     public static final String TEXT_FILE = "file";
+    public static final String TEXT_ZERO = "0";
+    public static final String TEXT_USER = "user";
+    public static final String TEXT_FILE_PATH = "filePath";
+    public static final String TEXT_EVENTS = "events";
     public static final String TEXT_CONTENT_DISPOSITION = "Content-Disposition";
     public static final String TEXT_ATTACHMENT_FILENAME = "attachment; filename=";
     public static final String DOUBLE_QUOTES = "\"";
@@ -61,4 +66,8 @@ public final class Constants {
     public static final String NEW_FILE_NAME_IS_REQUIRED = "New file name is required";
     public static final String FILE_NAME_HAS_ALREADY_TAKEN = "The file name is already taken. Please choose a different name.";
     public static final String FILE_USER_IS_REQUIRED = "User and File are required";
+    public static final String TEXT_UTILITY_CLASS = "Utility class";
+    public static final Integer NUMBER_1 = 1;
+    public static final boolean TRUE = true;
+    public static final String NO_FOUND_ID = "Must be - ID: ";
 }

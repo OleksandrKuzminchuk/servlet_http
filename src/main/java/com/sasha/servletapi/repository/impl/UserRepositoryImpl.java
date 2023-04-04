@@ -17,7 +17,7 @@ public class UserRepositoryImpl implements UserRepository {
     private final HibernateUtil hibernateUtil = HibernateUtil.getInstance();
     @Override
     public User save(User user) {
-        User savedUser = null;
+        User savedUser;
         try (Session session = hibernateUtil.getSessionFactory().openSession()){
             session.getTransaction().begin();
             savedUser = (User) session.merge(user);
@@ -31,7 +31,7 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public User update(User user) {
-        User updatedUser = null;
+        User updatedUser;
         try (Session session = hibernateUtil.getSessionFactory().openSession()){
             session.getTransaction().begin();
             updatedUser = session.get(User.class, user.getId(), LockMode.PESSIMISTIC_WRITE);
@@ -45,7 +45,7 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public User findById(Integer id) {
-        User user = null;
+        User user;
         try (Session session = hibernateUtil.getSessionFactory().openSession()){
             user = session
                     .createQuery(FIND_BY_ID_USER, User.class)
@@ -62,7 +62,7 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public List<User> findAll() {
-        List<User> users = null;
+        List<User> users;
         try (Session session = hibernateUtil.getSessionFactory().openSession()){
             users = session
                     .createQuery(FIND_ALL_USERS, User.class)
@@ -85,7 +85,7 @@ public class UserRepositoryImpl implements UserRepository {
             session.getTransaction().begin();
             session
                     .createQuery(DELETE_BY_ID_USER)
-                    .setParameter("id", id)
+                    .setParameter(TEXT_ID, id)
                     .executeUpdate();
             session.getTransaction().commit();
         }catch (Exception e){

@@ -4,26 +4,26 @@
          xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_4_0.xsd"
          version="4.0">
     <servlet>
-        <servlet-name>UserController</servlet-name>
-        <servlet-class>com.sasha.servletapi.controller.UserController</servlet-class>
+        <servlet-name>UserRestControllerV1</servlet-name>
+        <servlet-class>com.sasha.servletapi.controller.UserRestControllerV1</servlet-class>
     </servlet>
     <servlet-mapping>
-        <servlet-name>UserController</servlet-name>
-        <url-pattern>/api/users/*</url-pattern>
+        <servlet-name>UserRestControllerV1</servlet-name>
+        <url-pattern>/api/v1/users/*</url-pattern>
     </servlet-mapping>
 
     <servlet>
-        <servlet-name>EventController</servlet-name>
-        <servlet-class>com.sasha.servletapi.controller.EventController</servlet-class>
+        <servlet-name>EventRestControllerV1</servlet-name>
+        <servlet-class>com.sasha.servletapi.controller.EventRestControllerV1</servlet-class>
     </servlet>
     <servlet-mapping>
-        <servlet-name>EventController</servlet-name>
-        <url-pattern>/api/events/*</url-pattern>
+        <servlet-name>EventRestControllerV1</servlet-name>
+        <url-pattern>/api/v1/events/*</url-pattern>
     </servlet-mapping>
 
     <servlet>
-        <servlet-name>FileController</servlet-name>
-        <servlet-class>com.sasha.servletapi.controller.FileController</servlet-class>
+        <servlet-name>FileRestControllerV1</servlet-name>
+        <servlet-class>com.sasha.servletapi.controller.FileRestControllerV1</servlet-class>
         <multipart-config>
             <location>C:\temporaryStorage</location>
             <max-file-size>20848820</max-file-size>
@@ -32,8 +32,8 @@
         </multipart-config>
     </servlet>
     <servlet-mapping>
-        <servlet-name>FileController</servlet-name>
-        <url-pattern>/api/files/*</url-pattern>
+        <servlet-name>FileRestControllerV1</servlet-name>
+        <url-pattern>/api/v1/files/*</url-pattern>
     </servlet-mapping>
 
     <listener>

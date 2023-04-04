@@ -1,8 +1,10 @@
 package com.sasha.servletapi.util.constant;
 
+import static com.sasha.servletapi.util.constant.Constants.TEXT_UTILITY_CLASS;
+
 public final class SqlConstantsUser {
     private SqlConstantsUser() {
-        throw new IllegalStateException("Utility class");
+        throw new IllegalStateException(TEXT_UTILITY_CLASS);
     }
     public static final String FIND_ALL_USERS =
             "SELECT u FROM User u " +

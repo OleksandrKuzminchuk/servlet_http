@@ -1,53 +1,48 @@
 package com.sasha.servletapi.service.impl;
 
-import com.sasha.servletapi.exception.NotFoundException;
 import com.sasha.servletapi.pojo.User;
+import com.sasha.servletapi.repository.EventRepository;
+import com.sasha.servletapi.repository.FileRepository;
 import com.sasha.servletapi.repository.UserRepository;
-import com.sasha.servletapi.repository.impl.UserRepositoryImpl;
+import com.sasha.servletapi.service.BaseService;
 import com.sasha.servletapi.service.UserService;
 
 import java.util.List;
 
-import static com.sasha.servletapi.util.constant.Constants.NOT_FOUND_USER;
-
-public class UserServiceImpl implements UserService {
-    private final UserRepository repository = new UserRepositoryImpl();
+public class UserServiceImpl extends BaseService implements UserService {
+    public UserServiceImpl(EventRepository eventRepository, UserRepository userRepository, FileRepository fileRepository) {
+        super(eventRepository, userRepository, fileRepository);
+    }
 
     @Override
     public User save(User user) {
-        return repository.save(user);
+        return userRepository.save(user);
     }
 
     @Override
     public User update(User user) {
         isExistsUser(user.getId());
-        return repository.update(user);
+        return userRepository.update(user);
     }
 
     @Override
     public User findById(Integer id) {
-        isExistsUser(id);
-        return repository.findById(id);
+        return isExistsUser(id);
     }
 
     @Override
     public List<User> findAll() {
-        return repository.findAll();
+        return userRepository.findAll();
     }
 
     @Override
     public void deleteById(Integer id) {
         isExistsUser(id);
-        repository.deleteById(id);
+        userRepository.deleteById(id);
     }
 
     @Override
     public void deleteAll() {
-        repository.deleteAll();
-    }
-    private void isExistsUser(Integer id) {
-        if (repository.findById(id) == null) {
-            throw new NotFoundException(NOT_FOUND_USER);
-        }
+        userRepository.deleteAll();
     }
 }
