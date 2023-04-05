@@ -33,12 +33,6 @@ public class FileServiceImpl extends BaseService implements FileService {
     }
 
     @Override
-    public File update(File file) {
-        isExistsFile(file.getId());
-        return fileRepository.update(file);
-    }
-
-    @Override
     public File uploadFile(HttpServletRequest req) throws ServletException, IOException {
         Part filePart = req.getPart(TEXT_FILE);
         String fileName = filePart.getSubmittedFileName();
@@ -58,6 +52,29 @@ public class FileServiceImpl extends BaseService implements FileService {
             saveFile(filePart, savePath);
             return this.save(new File(fileName, savePath.toString()));
         }
+    }
+
+    @Override
+    public File update(File file) {
+        return fileRepository.update(file);
+    }
+
+    @Override
+    public File overwriteFile(Integer id, String newName) throws IOException {
+        File fileMetadata = isExistsFile(id);
+
+        if (fileMetadata.getName().equals(newName)) {
+            throw new NotFoundException(FILE_NAME_HAS_ALREADY_TAKEN);
+        }
+
+        java.io.File oldFile = new java.io.File(fileMetadata.getFilePath());
+        Path newPath = Paths.get(oldFile.getParent(), newName);
+        Files.move(oldFile.toPath(), newPath, REPLACE_EXISTING);
+
+        fileMetadata.setName(newName);
+        fileMetadata.setFilePath(newPath.toString());
+
+        return this.update(fileMetadata);
     }
 
     @Override

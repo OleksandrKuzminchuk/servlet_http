@@ -69,5 +69,4 @@ public final class Constants {
     public static final String TEXT_UTILITY_CLASS = "Utility class";
     public static final Integer NUMBER_1 = 1;
     public static final boolean TRUE = true;
-    public static final String NO_FOUND_ID = "Must be - ID: ";
 }

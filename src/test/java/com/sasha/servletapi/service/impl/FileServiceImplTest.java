@@ -37,7 +37,6 @@ class FileServiceImplTest extends UtilService {
 
     @Test
     void shouldUpdateFile() {
-        when(fileRepository.findById(fileId)).thenReturn(expectedFileWithIdNamePath);
         when(fileRepository.update(expectedFileWithIdNamePath)).thenReturn(expectedFileWithIdNamePath);
 
         File updatedFile = fileService.update(expectedFileWithIdNamePath);
@@ -46,18 +45,7 @@ class FileServiceImplTest extends UtilService {
         assertEquals(expectedFileWithIdNamePath, updatedFile);
         assertEquals(TEST_NUMBER_1, updatedFile.getId());
 
-        verify(fileRepository, times(TEST_NUMBER_1)).findById(fileId);
         verify(fileRepository, times(TEST_NUMBER_1)).update(expectedFileWithIdNamePath);
-    }
-
-    @Test
-    void shouldThrowNotFoundExceptionWhenUpdateFileAndFileNotExists() {
-        when(fileRepository.findById(fileId)).thenReturn(null);
-
-        assertThrows(NotFoundException.class, () -> fileService.update(expectedFileWithIdNamePath));
-
-        verify(fileRepository, times(TEST_NUMBER_1)).findById(fileId);
-        verify(fileRepository, times(TEST_NUMBER_0)).update(expectedFileWithIdNamePath);
     }
 
     @Test
@@ -106,6 +94,52 @@ class FileServiceImplTest extends UtilService {
         assertEquals(TEST_TEXT_PATH_TO_TEST_FILE, uploadedFile.getFilePath());
 
         verify(fileRepository, times(TEST_NUMBER_0)).save(any(File.class));
+    }
+
+    @Test
+    void shouldOverwriteFile() throws IOException {
+        when(fileRepository.findById(fileId)).thenReturn(expectedFileWithIdNamePath);
+        when(fileRepository.update(any(File.class))).thenReturn(expectedFileWithIdNamePath);
+
+        java.io.File tempFile = java.nio.file.Files.createTempFile(TEST_TEXT_TEMP, TEST_TEXT_FILE).toFile();
+        try {
+            tempFile.deleteOnExit();
+            expectedFileWithIdNamePath.setFilePath(tempFile.getAbsolutePath());
+
+            String newName = TEST_TEXT_FILE_NEW_NAME;
+            File overwrittenFile = fileService.overwriteFile(fileId, newName);
+
+            assertNotNull(overwrittenFile);
+            assertEquals(newName, overwrittenFile.getName());
+            assertNotEquals(tempFile.getAbsolutePath(), overwrittenFile.getFilePath());
+
+            verify(fileRepository, times(TEST_NUMBER_1)).findById(fileId);
+            verify(fileRepository, times(TEST_NUMBER_1)).update(any(File.class));
+        }finally {
+            tempFile.delete();
+        }
+    }
+
+    @Test
+    void shouldThrowNotFoundExceptionFileNameHasAlreadyTakenWhenUpdate() {
+        when(fileRepository.findById(fileId)).thenReturn(expectedFileWithIdNamePath);
+
+        String newName = expectedFileWithIdNamePath.getName();
+
+        assertThrows(NotFoundException.class, () -> fileService.overwriteFile(fileId, newName));
+
+        verify(fileRepository, times(TEST_NUMBER_1)).findById(fileId);
+        verify(fileRepository, times(TEST_NUMBER_0)).update(any(File.class));
+    }
+
+    @Test
+    void shouldThrowNotFoundExceptionNotExistsFileWhenUpdate() {
+        when(fileRepository.findById(fileId)).thenReturn(null);
+
+        assertThrows(NotFoundException.class, () -> fileService.overwriteFile(fileId, expectedFileWithIdNamePath.getName()));
+
+        verify(fileRepository, times(TEST_NUMBER_1)).findById(fileId);
+        verify(fileRepository, times(TEST_NUMBER_0)).update(any(File.class));
     }
 
     @Test

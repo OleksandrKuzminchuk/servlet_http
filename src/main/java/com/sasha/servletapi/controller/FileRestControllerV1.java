@@ -13,18 +13,16 @@ import javax.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
 
 import static com.sasha.servletapi.util.constant.Constants.*;
 import static java.lang.String.format;
-import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 import static javax.servlet.http.HttpServletResponse.*;
 
 @WebServlet(name = FILE_REST_CONTROLLER_V1, urlPatterns = URL_API_V1_FILES)
-public class FileRestControllerV1 extends  BaseRestControllerV1{
+public class FileRestControllerV1 extends BaseRestControllerV1 {
     private final FileService service;
 
     public FileRestControllerV1() {
@@ -81,8 +79,6 @@ public class FileRestControllerV1 extends  BaseRestControllerV1{
             String pathInfo = req.getPathInfo();
             Integer id = parseId(pathInfo).orElseThrow(() -> new NotFoundException(FILE_ID_IS_REQUIRED));
 
-            File fileMetadata = service.findById(id);
-
             File newFileName = gson.fromJson(req.getReader(), File.class);
 
             if (newFileName == null || newFileName.getName().isEmpty()) {
@@ -90,19 +86,7 @@ public class FileRestControllerV1 extends  BaseRestControllerV1{
                 return;
             }
 
-            if (service.isExistsByName(newFileName.getName())) {
-                sendError(resp, SC_CONFLICT, FILE_NAME_HAS_ALREADY_TAKEN);
-                return;
-            }
-
-            java.io.File oldFile = new java.io.File(fileMetadata.getFilePath());
-            Path newPath = Paths.get(oldFile.getParent(), newFileName.getName());
-            Files.move(oldFile.toPath(), newPath, REPLACE_EXISTING);
-
-            fileMetadata.setName(newFileName.getName());
-            fileMetadata.setFilePath(newPath.toString());
-
-            File updatedFile = service.update(fileMetadata);
+            File updatedFile = service.overwriteFile(id, newFileName.getName());
 
             resp.setContentType(APPLICATION_JSON);
             resp.getWriter().write(gson.toJson(updatedFile));

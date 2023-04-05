@@ -10,5 +10,6 @@ public interface FileService extends GenericService<File, Integer> {
     boolean isExistsByName(String name);
     File findByName(String name);
     File uploadFile(HttpServletRequest req) throws ServletException, IOException;
+    File overwriteFile(Integer id, String newName) throws IOException;
 
 }
